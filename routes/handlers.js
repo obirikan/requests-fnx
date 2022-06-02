@@ -30,28 +30,37 @@ router.post('/register',async (req,res)=>{
     } catch (err) {
         console.log(err)
     }
-    
 })
+    
+    router.post('/login',async (req,res)=>{
+        try {
+           const {users,password}=req.body
+           //finding user 
+           const person=await use.findOne({user:users})
+           //destructure
+           if(person===null){
+               res.json(' username does not exist ')
+           }
 
-router.post('/login',async (req,res)=>{
-    try {
-         const {users,password}=req.body
-        //finding user
-        const person=await use.findOne({user:users})
-       const {id,user}=person
-        //comparing password
-        const valid=await bcrypt.compare(password,person.password)
-
-        //checkin
-        if(person && valid){
+           const valid=await bcrypt.compare(password,person.password)
+           if(valid===null){
+            res.json(valid)
+        }
+           //making sure two usernames does not exist
+           if(!person || !valid){
+                res.json('wrong username or password')
+           }else{
+            const {user,id}=person
             const token=jwt.sign({user,id},process.env.SECRET) 
             res.status(200).json({user,id,token})
-        }else{
-            res.json("wrong username or password")
+                }
+           
+    
+        } catch (err) {
+            console.log(err)
         }
-    } catch (error) {
-        res.json(error)
-    }
-})
+    })
+
+
 
 module.exports=router
