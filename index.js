@@ -3,12 +3,15 @@ const mongoose=require('mongoose')
 const app=express()
 const cors = require("cors");
 const userRoute=require('./routes/handlers')
+const hand=require('./routes/user')
 require("dotenv").config();
 
 //middlewares
 app.use(cors())
 app.use(express.json())
 app.use('/api/users',userRoute)
+app.use('/api/handlers',hand)
+
 //routes
 
 
