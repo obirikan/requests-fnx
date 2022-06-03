@@ -15,7 +15,7 @@ router.post('/register',async (req,res)=>{
        const person=await use.findOne({user:users})
        //making sure two usernames does not exist
        if(person){
-            res.json('username already exist')
+            res.status(422).json('username already exist')
        }else{
              const done=await use.create({
              user:users,
@@ -39,16 +39,15 @@ router.post('/register',async (req,res)=>{
            const person=await use.findOne({user:users})
            //destructure
            if(person===null){
-               res.json(' username does not exist ')
+               res.status(422).json(' username does not exist ')
            }
-
            const valid=await bcrypt.compare(password,person.password)
            if(valid===null){
             res.json(valid)
         }
            //making sure two usernames does not exist
            if(!person || !valid){
-                res.json('wrong username or password')
+                res.status(422).json('wrong username or password')
            }else{
             const {user,id}=person
             const token=jwt.sign({user,id},process.env.SECRET) 
