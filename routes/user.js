@@ -2,6 +2,21 @@ const router=require('express').Router()
 const use=require('../models/users')
 const auth=require('../middleware/auth')
 
+
+
+
+
+router.get('/allusers',auth,async(req,res)=>{
+    try {
+        const {id:userId}=req.decoded
+        const pid=await use.find({_id:{$ne:userId}}).populate('friendlist','user')
+        res.status(200).json(pid)
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+//send friend request
 router.put('/send',auth,async (req,res)=>{
  try {
      //id of person
@@ -48,5 +63,53 @@ router.put('/send',auth,async (req,res)=>{
      res.status(500).json(error)
  }
 })
+
+
+//accept requests
+router.put('/acceptRequest',auth,async(req,res)=>{
+    const {id}=req.body
+    const {id:userId}=req.decoded
+    try{
+    //person sending request to
+     const recipient=await use.findById(id)
+    //person sending the request
+     const requester=await use.findById(userId)
+    //send friend request to store in recipients request
+    
+
+    // checkin if user is in list 
+    if(requester.Requests.filter(pins=>pins.toString()!==recipient._id).length>0){
+        const recep=await use.findByIdAndUpdate(requester._id,{
+            $pull:{
+                Requests:recipient._id,
+            },
+            $push:{
+                friendlist:recipient._id,
+            }
+        },{new:true})
+        res.json(requester)
+    }else{
+        res.send('not on list')
+    }
+
+    //removing user from sent request and adding him/her to friendlist
+    if(recipient.sendRequest.filter(pins=>pins.toString()!==requester._id).length>0){
+        const recep=await use.findByIdAndUpdate(recipient._id,{
+            $pull:{
+                sendRequest:requester._id,
+            },
+            $push:{
+                friendlist:requester._id,
+            }
+        },{new:true})
+        res.json(requester)
+    }else{
+        res.send('not on list')
+    }
+    }catch(error){
+     res.json(error)
+    }
+})
+
 
 module.exports=router
