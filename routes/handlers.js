@@ -17,14 +17,14 @@ router.post('/register',async (req,res)=>{
        if(person){
             res.status(422).json('username already exist')
        }else{
-             const done=await use.create({
+             const person=await use.create({
              user:users,
              password:hashedPassword
             })
       //destructuring
-            const {user,id}=done
+            const {user,id}=person
             const token=jwt.sign({user,id},process.env.SECRET) 
-            res.status(200).json({user,id,token})
+            res.status(200).json({person,token})
        }
 
     } catch (err) {
@@ -51,7 +51,7 @@ router.post('/register',async (req,res)=>{
            }else{
             const {user,id}=person
             const token=jwt.sign({user,id},process.env.SECRET) 
-            res.status(200).json({user,id,token})
+            res.status(200).json({person,token})
                 }
            
     

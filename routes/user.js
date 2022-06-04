@@ -56,7 +56,7 @@ router.put('/send',auth,async (req,res)=>{
         const requ=await use.findByIdAndUpdate(requester._id,{
             $push:{sendRequest:recipient._id}
         },{new:true})
-         res.json(recipient)
+         res.status(200).json(requ)
     }
   
  } catch (error) {
@@ -87,7 +87,7 @@ router.put('/acceptRequest',auth,async(req,res)=>{
                 friendlist:recipient._id,
             }
         },{new:true})
-        res.json(requester)
+        res.status(200).json(recep)
     }else{
         res.send('not on list')
     }
@@ -102,7 +102,6 @@ router.put('/acceptRequest',auth,async(req,res)=>{
                 friendlist:requester._id,
             }
         },{new:true})
-        res.json(requester)
     }else{
         res.send('not on list')
     }
