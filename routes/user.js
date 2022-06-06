@@ -15,6 +15,26 @@ router.get('/allusers',auth,async(req,res)=>{
         console.log(error)
     }
 })
+//get all sent requests
+router.get('/sentrequests',auth,async(req,res)=>{
+    try {
+        const {id:userId}=req.decoded
+        const pid=await use.findById(userId).populate('sendRequest')
+        res.status(200).json(pid.sendRequest)
+    } catch (error) {
+        console.log(error)
+    }
+})
+//get all friends
+router.get('/friends',auth,async(req,res)=>{
+    try {
+        const {id:userId}=req.decoded
+        const pid=await use.findById(userId).populate('friendlist')
+        res.status(200).json(pid.friendlist)
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 //send friend request
 router.put('/send',auth,async (req,res)=>{
