@@ -207,5 +207,36 @@ router.put('/unsend',auth,async(req,res)=>{
     }
 })
 
+//remove user from friendlist
+//REMOVING USER FROM FRIENDLIST
+router.put('/unfriend',auth,async (req,res)=>{
+    const {id}=req.body
+    const {id:userId}=req.decoded
+try{
+   //person sending request to
+    const recipient=await use.findById(id)
+   //person sending the request
+    const requester=await use.findById(userId)
+   //send friend request to store in recipients request
+
+   if(requester.friendlist.filter(pins=>pins.toString()!==recipient._id).length>0){
+       //removing id of user from friendlist 
+          const requ=await use.findByIdAndUpdate(requester._id,{
+           $pull:{friendlist:recipient._id}
+       },{new:true})
+       //removing my id from the other users friendlist
+       await use.findByIdAndUpdate(recipient._id,{
+           $pull:{friendlist:requester._id}
+       },{new:true})
+       res.json(requ)
+   }else{
+       res.send('user is not on list')
+   }
+
+} catch (error) {
+   res.status(500).json(error)
+}
+})
+
 
 module.exports=router
