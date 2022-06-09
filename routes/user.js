@@ -277,6 +277,16 @@ router.put('/unrec',auth,async(req,res)=>{
     }
 })
 
-
+//get all friend request
+//get all friends
+router.get('/requests',auth,async(req,res)=>{
+    try {
+        const {id:userId}=req.decoded
+        const pid=await use.findById(userId).populate('Requests')
+        res.status(200).json(pid.Requests)
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 module.exports=router
