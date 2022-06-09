@@ -17,14 +17,17 @@ router.post('/register',async (req,res)=>{
        if(person){
             res.status(422).json('username already exist')
        }else{
-             const person=await use.create({
+             let person=await use.create({
              user:users,
              password:hashedPassword
             })
       //destructuring
             const {user,id}=person
-            const token=jwt.sign({user,id},process.env.SECRET) 
-            res.status(200).json({person,token})
+            const token=jwt.sign({user,id},process.env.SECRET)
+             person={...person,token}
+             let {_doc}=person
+        
+            res.status(200).json({..._doc,token})
        }
 
     } catch (err) {
@@ -36,7 +39,7 @@ router.post('/register',async (req,res)=>{
         try {
            const {users,password}=req.body
            //finding user 
-           const person=await use.findOne({user:users})
+           let person=await use.findOne({user:users})
            //destructure
            if(person===null){
                res.status(422).json(' username does not exist ')
@@ -49,9 +52,12 @@ router.post('/register',async (req,res)=>{
            if(!person || !valid){
                 res.status(422).json('wrong username or password')
            }else{
-            const {user,id}=person
+            let {user,id}=person
             const token=jwt.sign({user,id},process.env.SECRET) 
-            res.status(200).json({person,token})
+            person={...person,token}
+            let {_doc}=person
+            res.status(200).json({..._doc,token})
+            // res.status(200).json({person,token})
                 }
            
     
