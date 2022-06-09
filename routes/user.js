@@ -169,5 +169,43 @@ router.put('/acceptRequest',auth,async(req,res)=>{
     }
 })
 
+//withdraw from sent request
+router.put('/unsend',auth,async(req,res)=>{
+    const {id}=req.body
+    const {id:userId}=req.decoded
+    try{
+    //person sending request to
+     const recipient=await use.findById(id)
+    //person sending the request
+     const requester=await use.findById(userId)
+    //send friend request to store in recipients request
+    
+
+    //checkin if user is in list to remove
+    if(recipient.Requests.filter(pins=>pins.toString()===userId).length>0){
+        const recep=await use.findByIdAndUpdate(recipient._id,{
+            $pull:{Requests:
+                requester._id,
+            }
+        },{new:true})
+    }else{
+        res.send('user is not on list')
+    }
+
+    //REMOVE RECIPIENT
+    if(requester.sendRequest.filter(pins=>pins.toString()!==recipient._id).length>0){
+        const requ=await use.findByIdAndUpdate(requester._id,{
+            $pull:{sendRequest:recipient._id}
+        },{new:true})
+        res.json(requ)
+    }else{
+        res.send('cant')
+    }
+ 
+    }catch(error){
+     res.json(error)
+    }
+})
+
 
 module.exports=router
