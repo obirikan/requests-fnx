@@ -14,7 +14,9 @@ app.use('/api/handlers',hand)
 
 //routes
 
-
+app.get('/allz',(req,res)=>{
+ res.send('running')
+})
 
 //mongoose connection
 mongoose.connect("mongodb+srv://kelvin:salvation22@cluster0.iaa1e.mongodb.net/newapp",
